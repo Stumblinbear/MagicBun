@@ -33,7 +33,7 @@ help: |
 
   If you have any suggestions, just message @Stumblinbear :D
 
-roll_die_fail: r u stupid
+roll_dice_fail: r u stupid
 roll_die: |
   *Result of ${amt}d${die}:* ${result}
 roll_dice: |
