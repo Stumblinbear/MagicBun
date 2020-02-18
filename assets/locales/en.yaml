@@ -1,3 +1,5 @@
+error: o-oh no.. s-s-something went wrnog... im s-so sorry...
+
 admin:
     prevent:
         safe: No perms, heckin nerd. I only answer to admins.
@@ -31,8 +33,6 @@ help: |
 
   If you have any suggestions, just message @Stumblinbear :D
 
-mosh:
-  error: o-oh no.. s-s-something went wrnog... im s-so sorry...
 roll_die_fail: r u stupid
 roll_die: |
   *Result of ${amt}d${die}:* ${result}

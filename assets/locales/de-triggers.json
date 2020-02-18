@@ -1,0 +1,4 @@
+{
+    "/^(uwu) bot$/i":
+        [ "respond", { "text": "listen.good_bot" } ]
+}

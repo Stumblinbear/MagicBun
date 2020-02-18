@@ -1,22 +1,18 @@
 import * as fs from 'async-file';
-import { readFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import * as path from 'path';
-import * as https from 'https';
 
-import Telegraf, { Context, Telegram } from 'telegraf';
+import Telegraf, { Context, ContextMessageUpdate } from 'telegraf';
 import * as tt from 'telegraf/typings/telegram-types.d';
 
 import * as acapelabox from './acapelabox';
 
-const byebyte = require('byebyte');
+import * as intents from './intents';
 
 const DEVELOPER = 104504591;
 
 // One week marks the group as dead.
 const ALIVE_CUTOFF = 1000 * 60 * 60 * 24 * 7;
-
-const EXT_PHOTO = ['jpg', 'jpeg', 'png'];
-const EXT_VIDEO = ['gif', 'mp4'];
 
 const MOSH_INTENSITY: { [key: string]: number } = {
     mosh: 50,
@@ -125,27 +121,7 @@ class Chat {
     }
 }
 
-function download(url: string, dest: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        var file = fs.createWriteStream(dest);
-
-        https.get(url, response => {
-            response.pipe(file);
-
-            file.on('finish', function() {
-                file.close();
-
-                resolve();
-            });
-        }).on('error', (err) => {
-            fs.unlink(dest);
-
-            reject(err.message);
-        });
-    });
-}
-
-function t(ctx: Context, text: string, extra?: any) {
+export function t(ctx: Context, text: string, extra?: any) {
     const chat = database.getChat(ctx.chat);
     const i18n = (ctx as any).i18n;
 
@@ -173,7 +149,7 @@ console.log('Loading database...');
 
 const database = new Database();
 
-const bot = new Telegraf(process.env.BOT_TOKEN as string);
+export const bot = new Telegraf(process.env.BOT_TOKEN as string);
 
 const i18n = new (require('telegraf-i18n'))({
     defaultLanguage: 'en',
@@ -213,12 +189,8 @@ bot.use(async (ctx, next) => {
     }
 });
 
-bot.on('message', (ctx, next) => {
-    database.getChat(ctx.chat).receivedMessage();
 
-    if(next) next();
-});
-
+// Inline query
 const TRASH_REPLACE = [['&#39;', ''], ['\bi\b', 'i\'s'], ['\bjust\b', 'jus'], ['it is', 'tis'], ['\bis\b', 'ish'], ['\bit\'?s\b', 'is'], ['lol', 'hehe'], ['because', 'cuz'], ['fuck', 'FUCK'], ['l', 'w'], ['r', 'w'], ['okay', 'otay'], ['this', 'dis'], ['ce(?=\w)', 'ec'], ['ev', 'eb'], ['th', 'f'], ['so', 'sho']];
 const TRASH_ENDINGS = [' >w<;', ' >w<', ' owo;', ' owo', ' uwu;', ' uwu', ' =w=', ' @////@', ' ono', ' nyaa~~', ', daddy', ' vnv', ' vwv', ' p~p', ' o~o', '~~'];
 
@@ -237,6 +209,15 @@ bot.on('inline_query', async ctx => {
     await ctx.answerInlineQuery([
         { type: 'article', id: 'hewwo', title: 'Hewwo >w<;', description: text, input_message_content: { message_text: text } }
     ], { cache_time: 0 });
+});
+
+
+// Message handlers
+
+bot.on('message', (ctx, next) => {
+    database.getChat(ctx.chat).receivedMessage();
+
+    if(next) next();
 });
 
 bot.start(async ctx => { await ctx.reply(t(ctx, 'start')); await ctx.reply(t(ctx, 'help')); });
@@ -264,189 +245,71 @@ bot.command('snowflake_filter', async ctx => {
     }
 });
 
-const ROLL_REGEX = /^bun,? roll ([0-9]{1,2})d([0-9]{1,5})$/i;
-bot.hears(ROLL_REGEX, async ctx => {
-    if(!ctx.message?.text) return;
-
-    const [_, amt, die]: any = ROLL_REGEX.exec(ctx.message.text);
-
-    if(amt <= 0) {
-        await ctx.reply(t(ctx, 'roll_dice_fail'));
-    }else{
-        const all = [];
-        for(let i = 0; i < amt; i++)
-            all.push(Math.floor(Math.random() * die) + 1);
-
-        if(amt == 1) {
-            await ctx.reply(t(ctx, 'roll_die', {
-                amt, die, result: all.reduce((acc, v) => acc + v, 0)
-            }));
-        }else{
-            await ctx.reply(t(ctx, 'roll_dice', {
-                all: '[' + all.join(', ') + ']', amt, die, sum: all.reduce((acc, v) => acc + v, 0)
-            }));
-        }
-    }
-});
-
-bot.hears(new RegExp('^(' + Object.keys(MOSH_INTENSITY).join('|') + ')$', 'i'), async ctx => {
-    if(!ctx.message?.text || !ctx.message?.reply_to_message) return;
-
-    // let operation: string = ctx.message.text.indexOf(' ') !== -1 ? ctx.message.text.split(' ')[0] : 'destroy';
-    let times = MOSH_INTENSITY[ctx.message.text.indexOf(' ') !== -1 ? ctx.message.text.split(' ')[1] : ctx.message.text];
-
-    let file_id: string;
-    let file_type: 'video' | 'photo';
-
-    if(ctx.message.reply_to_message.video?.file_id) {
-        file_id = ctx.message.reply_to_message.video?.file_id;
-        file_type = 'video';
-    }else if(ctx.message.reply_to_message.document?.mime_type == 'video/mp4') {
-        file_id = ctx.message.reply_to_message.document?.file_id;
-        file_type = 'video';
-    }else if(ctx.message.reply_to_message.photo) {
-        file_id = ctx.message.reply_to_message.photo[ctx.message.reply_to_message.photo.length - 1].file_id;
-        file_type = 'photo';
-    }else{
-        return;
-    }
-    
-    let tempFolder = path.resolve('../', 'temp');
-
-    if(!await fs.exists(tempFolder))
-        await fs.mkdir(tempFolder);
-
-    let tempFile = path.resolve(tempFolder, file_id + '.' + (file_type == 'video' ? 'mp4' : 'png'));
-
-    await ctx.replyWithChatAction(file_type == 'video' ? 'record_video' : 'upload_photo');
-
-    if(!await fs.exists(tempFile))
-        await download(await bot.telegram.getFileLink(file_id), tempFile);
-
-    await ctx.replyWithChatAction(file_type == 'video' ? 'record_video' : 'upload_photo');
-
-    let tempMoshedFile = path.resolve(tempFolder, file_id + '-moshed.' + (file_type == 'video' ? 'mp4' : 'png'));
-
-    try {
-        // let buf;
-        
-        // if(operation == 'destroy') {
-        let buf = byebyte.destroy({
-            fileBuffer: await fs.readFile(tempFile),
-            len: (await fs.stat(tempFile)).size,
-
-            min: 0,
-            max: 1,
-            times
-        });
-        /*}else{
-            buf = byebyte.shuffle(await fs.readFile(tempFile), {
-                min: 0,
-                max: 1,
-
-                chunkMin: 1,
-                chunkMax: 2,
-                times: 1
-            });
-        }*/
-
-        await ctx.replyWithChatAction(file_type == 'video' ? 'upload_video' : 'upload_photo');
-
-        if(file_type == 'video') {
-            await ctx.replyWithVideo({ source: buf });
-        }else{
-            await ctx.replyWithPhoto({ source: buf });
-        }
-    } catch(e) {
-        console.error(e);
-    }
-});
-
 bot.command('voices', ctx => {
     ctx.reply(Object.keys(acapelabox.voices).join(', '));
 });
 
-const ACAPELA_REGEX = new RegExp('^(' + Object.keys(acapelabox.voices).join('|') + '),? ?say (.*)', 'i');
 
-bot.hears(ACAPELA_REGEX, async ctx => {
-    if(!ctx.message?.text) return;
+// Listener handlers
 
-    let [_, voiceId, text]: any = ACAPELA_REGEX.exec(ctx.message.text);
+const listeners: { languageCode: string, re: RegExp, response: any }[] = [];
 
-    voiceId = voiceId.toLowerCase();
-    text = text.split('\n').join('..');
+for(let file of readdirSync(path.resolve('../', 'assets', 'locales'))) {
+    if(!file.endsWith('-triggers.json')) continue;
 
-    await ctx.replyWithChatAction('record_audio');
+    let languageCode = path.basename(file).split('-triggers.json')[0];
 
-    let url = await acapelabox.makeVoice(acapelabox.voices[voiceId], text);
+    console.log('Loading', languageCode, 'triggers...')
 
-    await ctx.replyWithChatAction('upload_audio');
-
-    await ctx.replyWithVoice({ url, filename: voiceId + '.mp3' });
-});
-
-(() => {
-    const listeners: { re: RegExp, response: any }[] = [];
-
-    for(let [match, response] of Object.entries(JSON.parse(readFileSync(path.resolve('../', 'assets', 'listen.json'), { encoding: 'utf8' })))) {
+    for(let [match, response] of Object.entries(JSON.parse(readFileSync(path.resolve('../', 'assets', 'locales', file), { encoding: 'utf8' })))) {
         listeners.push({
+            languageCode,
             re: new RegExp(match.substring(1, match.lastIndexOf('/')), match.substring(match.lastIndexOf('/') + 1)),
             response
         });
     }
+}
 
-    bot.use(async (ctx, next) => {
-        if(ctx.message && ctx.message.text) {
-            for(let listener of listeners) {
-                if(listener.re.test(ctx.message.text)) {
-                    const response = listener.response;
+bot.use(async (ctx, next) => {
+    if(ctx.message && ctx.message.text) {
+        for(let listener of listeners) {
+            if(listener.re.test(ctx.message.text)) {
+                let id;
+                let data;
 
-                    // If the chance fails, continue searching.
-                    if(response.chance && Math.random() > response.chance)
-                        continue;
+                if(Array.isArray(listener.response)) {
+                    id = listener.response[0];
 
-                    if(response.file) {
-                        await ctx.replyWithChatAction('upload_photo');
-
-                        let file: string;
-
-                        // If it's a directory
-                        if(response.file.indexOf('.') === -1) {
-                            const files = await fs.readdir(path.resolve('../assets/', response.file));
-
-                            file = path.resolve('../assets/', response.file, files[Math.floor(Math.random() * files.length)]);
-                        }else{
-                            file = path.resolve('../assets/', response.file);
-                        }
-                        
-                        let ext = path.extname(file).substring(1);
-
-                        if(EXT_PHOTO.includes(ext)) {
-                            await ctx.replyWithPhoto({ source: file }, {
-                                caption: response.text ? t(ctx, response.text) : undefined
-                            });
-                        }else if(EXT_VIDEO.includes(ext)) {
-                            await ctx.replyWithVideo({ source: file }, {
-                                caption: response.text ? t(ctx, response.text) : undefined
-                            });
-                        }else{
-                            await ctx.replyWithDocument({ source: file }, {
-                                caption: response.text ? t(ctx, response.text) : undefined
-                            });
-                        }
-                    }else{
-                        await ctx.reply(t(ctx, response.text));
-                    }
-
-                    // If a listener matches, bail. We don't want anything else to run.
-                    return;
+                    if(listener.response.length > 1)
+                        data = listener.response[1];
+                }else if(typeof listener.response === 'object') {
+                    id = listener.response.intent;
+                    data = listener.response.data;
+                }else{
+                    id = listener.response;
                 }
+
+                const oldLocale = (ctx as any).i18n.locale();
+
+                (ctx as any).i18n.locale(listener.languageCode);
+
+                let result = await (intents as any)[id](ctx, listener.re.exec(ctx.message.text), data);
+
+                (ctx as any).i18n.locale(oldLocale);
+
+                if(result === false) continue;
+
+                // If a listener matches, bail. We don't want anything else to run.
+                return;
             }
         }
+    }
 
-        if(next) await next();
-    });
-})();
+    if(next) await next();
+});
+
+
+// Boooooot
 
 console.log('Starting bot...');
 
