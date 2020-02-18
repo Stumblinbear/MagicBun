@@ -1,0 +1,30 @@
+{
+    "/let that sink in/i": { "file": "sink.jpg", "text": "listen.sink_in" },
+    "/(thanks? bun(ner)?|thanks? floof(ball|er)?)/i": { "text": "listen.thanks_bun" },
+    "/^(good|best) bot$/i": { "text": "listen.good_bot" },
+    "/^stupid bot$/i": { "text": "listen.stupid_bot" },
+    "/^hey,? bun$/i": { "text": "listen.hey_bun" },
+    "/sounds like (.+?) with extra steps/i": { "text": "listen.extra_steps" },
+    "/^oof$/i": { "text": "listen.oof" },
+    "/^ouch$/i": { "text": "listen.ouch" },
+    "/^owie$/i": { "text": "listen.owie" },
+    "/butt/i": { "chance": 0.01, "text": "listen.butt" },
+    "/^(fuck|ass|shit|bitch)$/i": { "chance": 0.01, "text": "listen.swear" },
+    "/^chill$/i": { "text": "listen.chill" },
+    "/^burn$/i": { "text": "listen.burn" },
+    "/aaaaaaa/i": { "text": "listen.aaaaaaa" },
+    "/^(i'?m|i am) (?!bun)([^\\s]+?)$/i": { "text": "listen.im_bun" },
+    "/^(i'?m|i am) bun$/i": { "text": "listen.no_im_bun" },
+    "/^owo$/i": { "text": "listen.owo" },
+    "/^fite me$/i": { "text": "listen.fite_me" },
+    "/bun,? play despacito/i": { "text": "listen.despacito" },
+
+    "/bun,? (?:roll|test|judge|roll the dice)/i": { "text": "listen.roll" },
+    "/^bun,? (?:how (?:are)|is|was|are|would|does|am|did|do you|can|should)/i": { "text": "listen.rate" },
+    "/^bun,? (?:who|what|where|when|why)/i": { "text": "listen.how" },
+
+    "/^(?:[p🅱️]ost )?(bun|bunner|bunny|hare|rabbit|floofball|floofer)$/i": { "file": "photos/bun/" },
+    "/^(?:[p🅱️]ost )?(cat|meow|[ck][ia]tt(?:en|er))$/i": { "file": "photos/cat/" },
+    "/^(?:[p🅱️]ost )?([d🅱️]og|pup|[dp🅱️][uo](?:[gp][gp]|🅱️🅱️)(?:o|er))$/i": { "file": "photos/dog/" },
+    "/^(?:[p🅱️]ost )?go(?:at|te)(?:er|y)?$/i": { "file": "photos/goat/" }
+}

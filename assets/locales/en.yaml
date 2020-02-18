@@ -1,0 +1,157 @@
+admin:
+    prevent:
+        safe: No perms, heckin nerd. I only answer to admins.
+        unsafe: No perms, heckin nerdo. I only answer to daddies.
+
+snowflake:
+    enabled: Snowflake filter enabled. Heckin fek.
+    disabled: Snowflake filter disabled! HAHA YES! IM BACK, FUCKOES!
+
+stats: I'm in approximately `${aliveGroups}` groups currently. I've been in `${allGroups}` total. `${allUsers}` person has messaged me privately.
+
+start: "`INITIALIZING THRUSTERS...`"
+help: |
+  AAAAAAAAAAA \*wiggles nose\* I am bun bun :3
+
+  *Text Commands*:
+    _Voice_, say _<text here>_
+      *Example*: `Bun, say eat my ass.`
+      Make me say gay things! Use /voices for a list of possible voices.
+    
+    _hewwo_ _<text here>_
+      tawk wike a good widdwe foowwy >w<;
+
+    I can also _post_ adorable _bunners_, _puppos_, and ADORABLE _KITTERS_!
+  
+  *Media Commands*:
+    _Mosh_, _zoomzoom_, and _corrupt_
+    Datamosh your favorite motion pictures into trashy memes!
+  
+  Oh, i can also answer questions and \*notice\* owo
+
+  If you have any suggestions, just message @Stumblinbear :D
+
+mosh:
+  error: o-oh no.. s-s-something went wrnog... im s-so sorry...
+roll_die_fail: r u stupid
+roll_die: |
+  *Result of ${amt}d${die}:* ${result}
+roll_dice: |
+  *Result of ${amt}d${die}:*
+    `${all}` = ${sum}
+
+listen:
+  sink_in:
+    safe: what the does it want, this time?
+    unsafe: what the FECKIN HUCKIE does it want now?
+  thanks_bun: no problem bby
+  good_bot: thank
+  stupid_bot: stupid human
+  hey_bun:
+    safe: yes, bby?
+    unsafe: yes, daddy?
+  extra_steps: aw jeez, rick
+  oof: ouch
+  ouch: owie
+  owie: my bones
+  butt:
+    - hehe
+    - hehe, you said butt
+  swear:
+    safe: naughty words are bad and you\'re bad for using them
+    unsafe: naughty words make my butt tingle
+  chill: no u
+  burn: \*gives you some ice\*
+  aaaaaaa: AAAAAAAAAAAAAAAAAAAAAA
+  im_bun: Hi %s, I'm bun.
+  no_im_bun: No, */* am bun.
+  owo:
+    - \*notices your bulge\* owo whats this?
+    - \*notices your face\* owo whats this?
+    - \*notices your kebab\* owo whats this?
+    - \*notices your stale meme\* owo whats this?
+    - \*notices your reoccuring gag\* owo whats this?
+    - \*notices your bun\* owo whats this?
+    - \*notices your owo\* owo whats this?
+  fite_me:
+    safe: fiteing is wrong ;-;
+    unsafe: oi ill fokin rek ya m8
+  despacito: https://youtu.be/kJQP7kiw5Fk
+  time_flies:
+    time: time flies when your triggered
+    unsafe: time flies when your a faggot
+  
+  roll:
+    - beautiful execution
+    - that was so good, id present it to the pope
+    - you pass
+    - lets assume you passed, i was too lazy to check
+    - you kinda didnt suck
+    - you failed
+    - \*presses f to pay respects to that travesty\*
+    - less effective than a Majikarp
+    - a brick wouldve been more effective
+  rate:
+    - i would give my firstborn to see that performance, again
+    - great
+    - fab
+    - teh greatest
+    - meh
+    - couldve been better
+    - needs improvement
+    - wtf this shit
+    - see me after class
+    - f for Fholy shit what how are you so shit
+    - a for excellent
+    - i wouldnt wipe my ass with that
+    - obummer out of ten
+    - 3.14/infinity
+    - no/10
+    - 3/wtf
+    - no/u
+    - -3/10
+    - 0/10
+    - 1/10
+    - 2/10
+    - 3/10
+    - 4/10
+    - 5/10
+    - 6/10
+    - 7/10
+    - 8/10
+    - 9/10
+    - 10/10
+    - 11/10
+    - 9/11
+  how:
+    - \*throws an 8 ball at you\*
+    - maybe
+    - sure
+    - yes
+    - absolutely not
+    - fuc u
+    - sure
+    - what
+    - no
+    - absolutely
+    - hella
+    - why would you ask me that
+    - you high or somethin?
+    - fuck yes
+    - wtf you sayin, homie
+    - what. no
+    - of coursr not
+    - holy shit are you autistic
+    - 42
+    - nah
+    - does the pope touch little boys?
+    - definitely not
+  what:
+    - dinkleberg
+    - \*wiggles nose\*
+    - the left one
+    - dunno bb
+    - dunno
+    - wait what
+    - instructions unclear got ears stuck in toaster
+    - a nerd
