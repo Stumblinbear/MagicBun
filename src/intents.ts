@@ -56,26 +56,26 @@ export async function respond(ctx: ContextMessageUpdate, match: RegExpExecArray,
 
         if(EXT_PHOTO.includes(ext)) {
             await ctx.replyWithPhoto({ source: file }, {
-                caption: data.text ? t(ctx, data.text) : undefined
+                caption: data.text ? t(ctx, data.text, match.groups) : undefined
             });
         }else if(EXT_VIDEO.includes(ext)) {
             await ctx.replyWithVideo({ source: file }, {
-                caption: data.text ? t(ctx, data.text) : undefined
+                caption: data.text ? t(ctx, data.text, match.groups) : undefined
             });
         }else{
             await ctx.replyWithDocument({ source: file }, {
-                caption: data.text ? t(ctx, data.text) : undefined
+                caption: data.text ? t(ctx, data.text, match.groups) : undefined
             });
         }
     }else{
-        await ctx.reply(t(ctx, data.text));
+        await ctx.reply(t(ctx, data.text, match.groups));
     }
     
     return true;
 }
 
 export async function roll(ctx: ContextMessageUpdate, match: RegExpExecArray, level: number) {
-    const [_, amt, die]: any = match;
+    const { amt, die }: any = match.groups;
 
     if(amt <= 0) {
         await ctx.reply(t(ctx, 'roll_dice_fail'));
@@ -165,16 +165,20 @@ export async function mosh(ctx: ContextMessageUpdate, match: RegExpExecArray, le
 }
 
 export async function acapela(ctx: ContextMessageUpdate, match: RegExpExecArray) {
-    let [_, voiceId, text]: any = match;
+    let { voice, text }: any = match;
 
-    voiceId = voiceId.toLowerCase();
+    voice = voice.toLowerCase();
+    if(!acapelabox.voices[voice]) return false;
+
     text = text.split('\n').join('..');
 
     await ctx.replyWithChatAction('record_audio');
 
-    let url = await acapelabox.makeVoice(acapelabox.voices[voiceId], text);
+    let url = await acapelabox.makeVoice(acapelabox.voices[voice], text);
 
     await ctx.replyWithChatAction('upload_audio');
 
-    await ctx.replyWithVoice({ url, filename: voiceId + '.mp3' });
+    await ctx.replyWithVoice({ url, filename: voice + '.mp3' });
+
+    return true;
 }

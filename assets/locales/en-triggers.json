@@ -1,11 +1,11 @@
 {
-    "/^bun,? roll ([0-9]{1,2})d([0-9]{1,5})$/i": "roll",
+    "/^(bun,? )?roll (?<amt>[0-9]{1,2})d(?<die>[0-9]{1,5})$/i": "roll",
 
     "/^mosh$/i": [ "mosh", 1 ],
     "/^corrupt$/i": [ "mosh", 2 ],
     "/^fuck$/i": [ "mosh", 4 ],
 
-    "/^(.{1,15}),? ?say (.*)/i": "acapela",
+    "/^(?<voice>.{1,15}),? ?say (?<text>.*)/i": "acapela",
     
     "/let that sink in/i":
         [ "respond", { "file": "sink.jpg", "text": "listen.sink_in" } ],
@@ -35,7 +35,7 @@
         [ "respond", { "text": "listen.burn" } ],
     "/aaaaaaa/i":
         [ "respond", { "text": "listen.aaaaaaa" } ],
-    "/^(i'?m|i am) (?!bun)([^\\s]+?)$/i":
+    "/^(i'?m|i am) (?!bun)(?<name>[^\\s]+?)$/i":
         [ "respond", { "text": "listen.im_bun" } ],
     "/^(i'?m|i am) bun$/i":
         [ "respond", { "text": "listen.no_im_bun" } ],

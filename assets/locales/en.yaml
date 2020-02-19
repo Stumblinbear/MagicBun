@@ -9,7 +9,7 @@ snowflake:
     enabled: Snowflake filter enabled. Heckin fek.
     disabled: Snowflake filter disabled! HAHA YES! IM BACK, FUCKOES!
 
-stats: I'm in approximately `${aliveGroups}` groups currently. I've been in `${allGroups}` total. `${allUsers}` person has messaged me privately.
+stats: I'm in approximately `${aliveGroups}` groups currently. I've been in `${allGroups}` total. `${allUsers}` people have messaged me privately.
 
 start: "`INITIALIZING THRUSTERS...`"
 help: |
@@ -33,7 +33,7 @@ help: |
 
   If you have any suggestions, just message @Stumblinbear :D
 
-roll_dice_fail: r u stupid
+roll_die_fail: r u stupid
 roll_die: |
   *Result of ${amt}d${die}:* ${result}
 roll_dice: |
@@ -63,7 +63,7 @@ listen:
   chill: no u
   burn: \*gives you some ice\*
   aaaaaaa: AAAAAAAAAAAAAAAAAAAAAA
-  im_bun: Hi %s, I'm bun.
+  im_bun: Hi ${name}, I'm bun.
   no_im_bun: No, */* am bun.
   owo:
     - \*notices your bulge\* owo whats this?

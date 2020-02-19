@@ -20,7 +20,7 @@
     "posttest": "npm run check",
     "start": "npm run compile && npm run copy && cd build/src && node index.js",
     "copy": "copyfiles \"assets/**/*\" build/",
-    "dev": "node ./node_modules/nodemon/bin/nodemon.js --watch assets --watch src -e ts,yaml --exec \"npm run start\""
+    "dev": "node ./node_modules/nodemon/bin/nodemon.js --watch \"assets/**/*\" --watch \"src/**/*\" -e ts,yaml,json --exec \"npm run start\""
   },
   "devDependencies": {
     "@types/node": "^10.0.3",
