@@ -5,7 +5,7 @@
     "/^corrupt$/i": [ "mosh", 2 ],
     "/^fuck$/i": [ "mosh", 4 ],
 
-    "/^(?<voice>.{1,15}),? ?say (?<text>.*)/i": "acapela",
+    "/^(?<voice>[^,]{1,15}),? ?say (?<text>.*)/i": "acapela",
     
     "/let that sink in/i":
         [ "respond", { "file": "sink.jpg", "text": "listen.sink_in" } ],

@@ -88,7 +88,7 @@ class Chat {
     constructor(data: any) {
         this.id = data.id;
         this.type = data.type;
-        this.name = data.name || data.title || (data.first_name + ' ' + data.last_name).trim();
+        this.name = data.name || data.title || (data.first_name + ' ' + (data.last_name || '')).trim();
         this.username = data.username;
         this.lastMessage = data.lastMessage || Date.now();
 
@@ -101,7 +101,7 @@ class Chat {
 
     update(data: any) {
         this.type = data.type;
-        this.name = data.name || data.title || (data.first_name + ' ' + data.last_name).trim();
+        this.name = data.name || data.title || (data.first_name + ' ' + (data.last_name || '')).trim();
         this.username = data.username;
     }
 
