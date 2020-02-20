@@ -77,7 +77,7 @@ class Database {
         }, { });
 
         for(const lang of Object.keys(languages))
-            languages[lang] = Math.round((languages[lang] / total) * 100) / 100;
+            languages[lang] = Math.round((languages[lang] / total) * 10000) / 100;
 
         return languages;
     }
@@ -101,9 +101,9 @@ class Chat {
 
     isSafe: boolean = false;
 
-    // Never store user information. Instead, we just count up the
-    // language of messages sent to get a general idea for who's
-    // using the bot, so languages for translation can be targetted
+    // Never store unconsenting user information or chat logs. Instead, we
+    // just count up the language of messages sent to get a general idea for
+    // who's using the bot, so languages for translation can be targetted
     languages: { [lang: string]: number };
 
     // This will give an idea of when the bot was added to the chat
