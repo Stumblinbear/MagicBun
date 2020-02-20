@@ -11,14 +11,8 @@ import * as intents from './intents';
 
 const DEVELOPER = 104504591;
 
-// One week marks the group as dead.
-const ALIVE_CUTOFF = 1000 * 60 * 60 * 24 * 7;
-
-const MOSH_INTENSITY: { [key: string]: number } = {
-    mosh: 50,
-    corrupt: 100,
-    fuck: 200
-};
+// Three days marks the group as dead.
+const ALIVE_CUTOFF = 1000 * 60 * 60 * 24 * 3;
 
 class Database {
     chats: { [key: number]: Chat } = { };
@@ -81,21 +75,41 @@ class Chat {
     type: string;
     name: string;
     username: string;
-    lastMessage: number;
 
     isSafe: boolean = false;
+
+    // Never store user information. Instead, we just count up the
+    // language of messages sent to get a general idea for who's
+    // using the bot, so languages for translation can be targetted
+    languages: { [lang: string]: number };
+
+    // This will give an idea of when the bot was added to the chat
+    // vs approximate when they got removed (or the chat died)
+    firstMessage: number;
+    lastMessage: number;
 
     constructor(data: any) {
         this.id = data.id;
         this.type = data.type;
         this.name = data.name || data.title || (data.first_name + ' ' + (data.last_name || '')).trim();
         this.username = data.username;
+        
+        this.languages = { };
+        this.firstMessage = data.firstMessage || Date.now();
         this.lastMessage = data.lastMessage || Date.now();
 
         this.update(data);
     }
 
-    receivedMessage() {
+    receivedMessage(ctx: ContextMessageUpdate) {
+        const lang = ctx.from?.language_code;
+
+        if(lang) {
+            if(!this.languages[lang])
+                this.languages[lang] = 0;
+            this.languages[lang]++;
+        }
+
         this.lastMessage = Date.now();
     }
 
@@ -215,7 +229,7 @@ bot.on('inline_query', async ctx => {
 // Message handlers
 
 bot.on('message', (ctx, next) => {
-    database.getChat(ctx.chat).receivedMessage();
+    database.getChat(ctx.chat).receivedMessage(ctx);
 
     if(next) next();
 });
