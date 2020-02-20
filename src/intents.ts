@@ -168,9 +168,6 @@ export async function acapela(ctx: ContextMessageUpdate, match: RegExpExecArray)
     let { voice, text }: any = match.groups;
 
     voice = voice.toLowerCase();
-    
-    console.log(voice);
-
     if(!acapelabox.voices[voice]) return false;
 
     text = text.split('\n').join('..');

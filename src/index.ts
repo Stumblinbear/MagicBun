@@ -63,6 +63,29 @@ class Database {
         return Object.values(this.chats).filter(chat => chat.isGroup && chat.lastMessage + ALIVE_CUTOFF <= Date.now()).length;
     }
 
+    private countLanguages(isGroup: boolean): { [lang: string]: number } {
+        let languages: { [lang: string]: number } = { };
+        let total = 0;
+
+        Object.values(this.chats).filter(chat => chat.isGroup == isGroup).forEach(chat => {
+            for(const [lang, count] of Object.entries(chat.languages)) {
+                if(!languages[lang])languages[lang] = 0;
+
+                languages[lang] += count;
+                total += count;
+            }
+        }, { });
+
+        for(const lang of Object.keys(languages))
+            languages[lang] = Math.round((languages[lang] / total) * 100) / 100;
+
+        return languages;
+    }
+
+    get privateLanguages(): { [lang: string]: number } { return this.countLanguages(false); }
+
+    get groupLanguages(): { [lang: string]: number } { return this.countLanguages(true); }
+
     async save() {
         await fs.writeFile('../database.json', JSON.stringify({
             chats: Object.values(this.chats)
@@ -84,7 +107,7 @@ class Chat {
     languages: { [lang: string]: number };
 
     // This will give an idea of when the bot was added to the chat
-    // vs approximate when they got removed (or the chat died)
+    // vs approximately when they got removed (or the chat died)
     firstMessage: number;
     lastMessage: number;
 
@@ -239,11 +262,17 @@ bot.help(async ctx => await ctx.reply(t(ctx, 'help')));
 
 bot.command('stats', ctx => {
     ctx.reply(t(ctx, 'stats', {
-        allUsers: database.allUsers,
+        users: {
+            all: database.allUsers,
+            languages: database.privateLanguages
+        },
 
-        allGroups: database.allGroups,
-        aliveGroups: database.aliveGroups,
-        deadGroups: database.deadGroups
+        groups: {
+            all: database.allGroups,
+            alive: database.aliveGroups,
+            dead: database.deadGroups,
+            languages: database.groupLanguages
+        }
     }));
 });
 

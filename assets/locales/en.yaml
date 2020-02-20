@@ -9,7 +9,10 @@ snowflake:
     enabled: Snowflake filter enabled. Heckin fek.
     disabled: Snowflake filter disabled! HAHA YES! IM BACK, FUCKOES!
 
-stats: I'm in approximately `${aliveGroups}` groups currently. I've been in `${allGroups}` total. `${allUsers}` people have messaged me privately.
+stats: |
+  I'm in approximately `${groups.alive}` groups currently. I've been in `${groups.all}` total. `${users.all}` people have messaged me privately.
+
+  *Dominant Languages:* ```JSON ${JSON.stringify(groups.languages, null, 2)}```
 
 start: "`INITIALIZING THRUSTERS...`"
 help: |
