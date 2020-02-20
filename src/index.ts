@@ -117,7 +117,7 @@ class Chat {
         this.name = data.name || data.title || (data.first_name + ' ' + (data.last_name || '')).trim();
         this.username = data.username;
         
-        this.languages = { };
+        this.languages = data.languages || { };
         this.firstMessage = data.firstMessage || Date.now();
         this.lastMessage = data.lastMessage || Date.now();
 
@@ -125,7 +125,7 @@ class Chat {
     }
 
     receivedMessage(ctx: ContextMessageUpdate) {
-        const lang = ctx.from?.language_code;
+        const lang = ctx.from?.language_code || 'unknown';
 
         if(lang) {
             if(!this.languages[lang])
