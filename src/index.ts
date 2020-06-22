@@ -63,28 +63,51 @@ class Database {
         return Object.values(this.chats).filter(chat => chat.isGroup && chat.lastMessage + ALIVE_CUTOFF <= Date.now()).length;
     }
 
-    private countLanguages(isGroup: boolean): { [lang: string]: number } {
-        let languages: { [lang: string]: number } = { };
+    private countLanguages(isGroup: boolean): { [lang: string]: [ number, number ] } {
+        let languages: { [lang: string]: [ number, number ] } = { };
         let total = 0;
 
         Object.values(this.chats).filter(chat => chat.isGroup == isGroup).forEach(chat => {
             for(const [lang, count] of Object.entries(chat.languages)) {
-                if(!languages[lang])languages[lang] = 0;
+                if(!languages[lang]) languages[lang] = [ 0, 0 ];
 
-                languages[lang] += count;
+                languages[lang][0] += count;
                 total += count;
             }
         }, { });
 
         for(const lang of Object.keys(languages))
-            languages[lang] = Math.round((languages[lang] / total) * 10000) / 100;
+            languages[lang][1] = Math.round((languages[lang][0] / total) * 10000) / 100;
 
         return languages;
     }
 
-    get privateLanguages(): { [lang: string]: number } { return this.countLanguages(false); }
+    get privateLanguages(): { [lang: string]: [ number, number ] } { return this.countLanguages(false); }
 
-    get groupLanguages(): { [lang: string]: number } { return this.countLanguages(true); }
+    get groupLanguages(): { [lang: string]: [ number, number ] } { return this.countLanguages(true); }
+
+    private countIntents(isGroup: boolean): { [intentId: string]: [ number, number ] } {
+        let intents: { [intentId: string]: [ number, number ] } = { };
+        let total = 0;
+
+        Object.values(this.chats).filter(chat => chat.isGroup == isGroup).forEach(chat => {
+            for(const [intentId, count] of Object.entries(chat.intents)) {
+                if(!intents[intentId]) intents[intentId] = [ 0, 0 ];
+
+                intents[intentId][0] += count;
+                total += count;
+            }
+        }, { });
+
+        for(const intentId of Object.keys(intents))
+            intents[intentId][1] = Math.round((intents[intentId][0] / total) * 10000) / 100;
+
+        return intents;
+    }
+
+    get privateIntents(): { [intentId: string]: [ number, number ] } { return this.countIntents(false); }
+
+    get groupIntents(): { [intentId: string]: [ number, number ] } { return this.countIntents(true); }
 
     async save() {
         await fs.writeFile('../database.json', JSON.stringify({
@@ -101,15 +124,17 @@ class Chat {
 
     isSafe: boolean = false;
 
-    // Never store unconsenting user information or chat logs. Instead, we
-    // just count up the language of messages sent to get a general idea for
-    // who's using the bot, so languages for translation can be targetted
-    languages: { [lang: string]: number };
-
     // This will give an idea of when the bot was added to the chat
     // vs approximately when they got removed (or the chat died)
     firstMessage: number;
     lastMessage: number;
+
+    // Never store unconsenting user information or chat logs. Instead, we
+    // just count up the language of messages sent to get a general idea for
+    // who's using the bot, so languages for translation can be targetted
+    languages: { [lang: string]: number };
+    
+    intents: { [lang: string]: number };
 
     constructor(data: any) {
         this.id = data.id;
@@ -117,9 +142,11 @@ class Chat {
         this.name = data.name || data.title || (data.first_name + ' ' + (data.last_name || '')).trim();
         this.username = data.username;
         
-        this.languages = data.languages || { };
         this.firstMessage = data.firstMessage || Date.now();
         this.lastMessage = data.lastMessage || Date.now();
+        
+        this.languages = data.languages || { };
+        this.intents = data.intents || { };
 
         this.update(data);
     }
@@ -134,6 +161,12 @@ class Chat {
         }
 
         this.lastMessage = Date.now();
+    }
+    
+    receivedIntent(intentId: string) {
+        if(!this.intents[intentId])
+            this.intents[intentId] = 0;
+        this.intents[intentId]++;
     }
 
     update(data: any) {
@@ -263,15 +296,19 @@ bot.help(async ctx => await ctx.reply(t(ctx, 'help')));
 bot.command('stats', ctx => {
     ctx.reply(t(ctx, 'stats', {
         users: {
-            all: database.allUsers,
-            languages: database.privateLanguages
+            all: database.allUsers
         },
 
         groups: {
             all: database.allGroups,
             alive: database.aliveGroups,
             dead: database.deadGroups,
-            languages: database.groupLanguages
+            languages: Object.entries(database.groupLanguages)
+                            .sort((a, b) => b[1][0] - a[1][0])
+                            .map(([id, [count, percent]]) => '*' + id + '*: ' + percent + '% (' + count + ')'),
+            intents: Object.entries(database.groupIntents)
+                            .sort((a, b) => b[1][0] - a[1][0])
+                            .map(([id, [count, percent]]) => '*' + id + '*: ' + percent + '% (' + count + ')')
         }
     }));
 });
@@ -341,6 +378,8 @@ bot.use(async (ctx, next) => {
                 (ctx as any).i18n.locale(oldLocale);
 
                 if(result === false) continue;
+                
+                database.getChat(ctx.chat).receivedIntent(id + (data ? ':' + JSON.stringify(data, null, 2) : ''));
 
                 // If a listener matches, bail. We don't want anything else to run.
                 return;

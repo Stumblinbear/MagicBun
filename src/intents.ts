@@ -56,19 +56,24 @@ export async function respond(ctx: ContextMessageUpdate, match: RegExpExecArray,
 
         if(EXT_PHOTO.includes(ext)) {
             await ctx.replyWithPhoto({ source: file }, {
+                reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined,
                 caption: data.text ? t(ctx, data.text, match.groups) : undefined
             });
         }else if(EXT_VIDEO.includes(ext)) {
             await ctx.replyWithVideo({ source: file }, {
+                reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined,
                 caption: data.text ? t(ctx, data.text, match.groups) : undefined
             });
         }else{
             await ctx.replyWithDocument({ source: file }, {
+                reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined,
                 caption: data.text ? t(ctx, data.text, match.groups) : undefined
             });
         }
     }else{
-        await ctx.reply(t(ctx, data.text, match.groups));
+        await ctx.reply(t(ctx, data.text, match.groups), {
+            reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined,
+        });
     }
     
     return true;
@@ -78,7 +83,9 @@ export async function roll(ctx: ContextMessageUpdate, match: RegExpExecArray, le
     const { amt, die }: any = match.groups;
 
     if(amt <= 0) {
-        await ctx.reply(t(ctx, 'roll_dice_fail'));
+        await ctx.reply(t(ctx, 'roll_dice_fail'), {
+            reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined
+        });
     }else{
         const all = [];
         for(let i = 0; i < amt; i++)
@@ -87,11 +94,15 @@ export async function roll(ctx: ContextMessageUpdate, match: RegExpExecArray, le
         if(amt == 1) {
             await ctx.reply(t(ctx, 'roll_die', {
                 amt, die, result: all.reduce((acc, v) => acc + v, 0)
-            }));
+            }), {
+                reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined
+            });
         }else{
             await ctx.reply(t(ctx, 'roll_dice', {
                 all: '[' + all.join(', ') + ']', amt, die, sum: all.reduce((acc, v) => acc + v, 0)
-            }));
+            }), {
+                reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined
+            });
         }
     }
 }
@@ -155,12 +166,20 @@ export async function mosh(ctx: ContextMessageUpdate, match: RegExpExecArray, le
         await ctx.replyWithChatAction(file_type == 'video' ? 'upload_video' : 'upload_photo');
 
         if(file_type == 'video') {
-            await ctx.replyWithVideo({ source: buf });
+            await ctx.replyWithVideo({ source: buf }, {
+                reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined
+            });
         }else{
-            await ctx.replyWithPhoto({ source: buf });
+            await ctx.replyWithPhoto({ source: buf }, {
+                reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined
+            });
         }
     } catch(e) {
         console.error(e);
+        
+        await ctx.reply(t(ctx, 'error'), {
+            reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined
+        });
     }
 }
 
@@ -178,7 +197,9 @@ export async function acapela(ctx: ContextMessageUpdate, match: RegExpExecArray)
 
     await ctx.replyWithChatAction('upload_audio');
 
-    await ctx.replyWithVoice({ url, filename: voice + '.mp3' });
+    await ctx.replyWithVoice({ url, filename: voice + '.mp3' }, {
+        reply_to_message_id: ctx.chat?.type != 'private' ? ctx.message?.message_id : undefined
+    });
 
     return true;
 }

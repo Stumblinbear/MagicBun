@@ -8,9 +8,9 @@
     "/^(?<voice>[^,]{1,15}),? ?say (?<text>.*)/i": "acapela",
     
     "/let that sink in/i":
-        [ "respond", { "file": "sink.jpg", "text": "listen.sink_in" } ],
-    "/(thanks? bun(ner)?|thanks? floof(ball|er)?)/i":
-        [ "respond", "listen.thanks_bun" ],
+        [ "respond", { "file": "photos/sink.jpg", "text": "listen.sink_in" } ],
+    "/thanks?,? (bun(ner)?|floof(ball|er)?)/i":
+        [ "respond", { "text": "listen.thanks_bun" } ],
     "/^(good|best) bot$/i":
         [ "respond", { "text": "listen.good_bot" } ],
     "/^stupid bot$/i":
@@ -36,11 +36,11 @@
     "/aaaaaaa/i":
         [ "respond", { "text": "listen.aaaaaaa" } ],
     "/^(i'?m|i am) (?!bun)(?<name>[^\\s]+?)$/i":
-        [ "respond", { "text": "listen.im_bun" } ],
+        [ "respond", { "chance": 0.05, "text": "listen.im_bun" } ],
     "/^(i'?m|i am) bun$/i":
         [ "respond", { "text": "listen.no_im_bun" } ],
     "/^owo$/i":
-        [ "respond", { "text": "listen.owo" } ],
+        [ "respond", { "chance": 0.05, "text": "listen.owo" } ],
     "/^fite me$/i":
         [ "respond", { "text": "listen.fite_me" } ],
     "/bun,? play despacito/i":

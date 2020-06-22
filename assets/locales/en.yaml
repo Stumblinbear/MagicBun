@@ -12,7 +12,11 @@ snowflake:
 stats: |
   I'm in approximately `${groups.alive}` groups currently. I've been in `${groups.all}` total. `${users.all}` people have messaged me privately.
 
-  *Dominant Languages:* `${JSON.stringify(groups.languages, null, 2)}`
+  *Dominant Languages:*
+    ${groups.languages.join('\n  ')}
+
+  *Intent Usage:*
+    ${groups.intents.join('\n  ')}
 
 start: "`INITIALIZING THRUSTERS...`"
 help: |
