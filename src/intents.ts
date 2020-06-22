@@ -8,6 +8,10 @@ import * as acapelabox from './acapelabox';
 
 import { bot, t } from './index';
 
+import { Random, MersenneTwister19937 } from 'random-js';
+
+const random = new Random(MersenneTwister19937.autoSeed());
+
 const byebyte = require('byebyte');
 
 const EXT_PHOTO = ['jpg', 'jpeg', 'png'];
@@ -35,7 +39,7 @@ function download(url: string, dest: string): Promise<void> {
 
 export async function respond(ctx: ContextMessageUpdate, match: RegExpExecArray, data: any) {
     // If the chance fails, continue searching.
-    if(data.chance && Math.random() > data.chance)
+    if(data.chance && random.bool(data.chance))
         return false;
 
     if(data.file) {
@@ -47,7 +51,7 @@ export async function respond(ctx: ContextMessageUpdate, match: RegExpExecArray,
         if(data.file.indexOf('.') === -1) {
             const files = await fs.readdir(path.resolve('../assets/', data.file));
 
-            file = path.resolve('../assets/', data.file, files[Math.floor(Math.random() * files.length)]);
+            file = path.resolve('../assets/', data.file, files[random.integer(0, files.length - 1)]);
         }else{
             file = path.resolve('../assets/', data.file);
         }
@@ -89,7 +93,7 @@ export async function roll(ctx: ContextMessageUpdate, match: RegExpExecArray, le
     }else{
         const all = [];
         for(let i = 0; i < amt; i++)
-            all.push(Math.floor(Math.random() * die) + 1);
+            all.push(random.integer(1, die));
 
         if(amt == 1) {
             await ctx.reply(t(ctx, 'roll_die', {

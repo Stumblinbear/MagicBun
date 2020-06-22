@@ -33,6 +33,7 @@
   "dependencies": {
     "async-file": "^2.0.2",
     "byebyte": "^2.0.0",
+    "random-js": "^2.1.0",
     "request": "^2.88.2",
     "telegraf": "^3.36.0",
     "telegraf-i18n": "^6.6.0"
