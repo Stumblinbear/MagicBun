@@ -49,7 +49,7 @@ roll_dice: |
 
 listen:
   sink_in:
-    safe: what the does it want, this time?
+    safe: what the frick does it want, this time?
     unsafe: what the FECKIN HUCKIE does it want now?
   thanks_bun: no problem bby
   good_bot: thank

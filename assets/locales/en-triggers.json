@@ -40,7 +40,7 @@
     "/^(i'?m|i am) bun$/i":
         [ "respond", { "text": "listen.no_im_bun" } ],
     "/^owo$/i":
-        [ "respond", { "chance": 0.05, "text": "listen.owo" } ],
+        [ "respond", { "chance": 0.1, "text": "listen.owo" } ],
     "/^fite me$/i":
         [ "respond", { "text": "listen.fite_me" } ],
     "/bun,? play despacito/i":
