@@ -39,7 +39,7 @@ function download(url: string, dest: string): Promise<void> {
 
 export async function respond(ctx: ContextMessageUpdate, match: RegExpExecArray, data: any) {
     // If the chance fails, continue searching.
-    if(data.chance && random.bool(data.chance))
+    if(data.chance && !random.bool(data.chance))
         return false;
 
     if(data.file) {
